@@ -1,6 +1,8 @@
+from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from .models import Place
-from .forms import PlaceForm
+from django.views.generic import FormView, DetailView
+from .models import Place, FeedBack
+from .forms import PlaceForm, FeedBackForm
 
 
 def places(request):
@@ -39,3 +41,19 @@ def delete_place(request, id):
     place_object = Place.objects.get(id=id)
     place_object.delete()
     return redirect(places)
+
+
+class FeedBackView(FormView):
+    template_name = 'places/feedback_form.html'
+    form_class = FeedBackForm
+    success_url = '/places/'
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+    
+
+class FeedBackDetailView(DetailView):
+    queryset = FeedBack.objects.all()
+    template_name = 'places/feedback.html'
+
